@@ -1,0 +1,19 @@
+[mysqld]
+	datadir = /var/lib/mysql
+	socket  = /run/mysqld/mysqld.sock
+	bind_address = 0.0.0.0
+	port = 3306
+	user = mysql
+
+	# Logging
+	log_error = /dev/stderr
+	#log_error = /var/log/mysql/error.log
+
+	# Performance tuning
+	innodb_buffer_pool_size = 128M
+	innodb_log_file_size = 32M
+	innodb_log_buffer_size = 8M
+	query_cache_size = 64M
+
+	# Security
+	max_connections = 150

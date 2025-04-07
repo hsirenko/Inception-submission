@@ -1,0 +1,311 @@
+services:
+  mariadb:
+    container_name: mariadb
+    image: mariadb
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - mariadb:/var/lib/mysql
+      - ./logs/mariadb:/var/lib/mysql
+    build:
+      context: requirements/mariadb
+      dockerfile: Dockerfile
+    environment:
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_USER=hsirenko
+      - MYSQL_PASSWORD=qwerty
+      - MYSQL_ROOT_PASSWORD=qwerty
+    env_file:
+      - .env
+    restart: on-failure
+    networks:
+      - inception
+  
+  nginx:
+    container_name: nginx
+    image: nginx
+    depends_on:
+      wordpress:
+        condition: service_healthy
+    volumes:
+      - wordpress:/var/www/wordpress
+    build:
+      context: requirements/nginx
+      dockerfile: Dockerfile
+    ports:
+      - "443:443"
+    env_file:
+      - .env
+    restart: on-failure
+    networks:
+      - inception
+  
+  wordpress:
+    container_name: wordpress
+    image: wordpress
+    volumes:
+      - wordpress:/var/www/wordpress
+    build:
+      context: requirements/wordpress
+      dockerfile: Dockerfile
+    environment:
+      - WORDPRESS_DB_HOST=mariadb
+      - WORDPRESS_DB_USER=hsirenko
+      - WORDPRESS_DB_PASSWORD=qwerty
+      - WORDPRESS_DB_NAME=wordpress
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    env_file:
+      - .env
+    restart: on-failure
+    networks:
+      - inception
+
+networks:
+  inception:
+    driver: bridge
+    name: inception
+  
+volumes:
+  wordpress:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: '/home/${USER}/data/wordpress'
+
+  mariadb:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: '/home/${USER}/data/mariadb'
+
+secrets:
+  mariadb_user:
+    file: ../secrets/mariadb_user.txt
+  mariadb_root_pass:
+    file: ../secrets/mariadb_root_pass.txt
+  mariadb_pass:
+    file: ../secrets/mariadb_pass.txt
+  wp_admin:
+    file: ../secrets/wp_admin.txt
+  wp_admin_pass:
+    file: ../secrets/wp_admin_pass.txt
+  wp_user:
+    file: ../secrets/wp_user.txt
+  wp_user_pass:
+    file: ../secrets/wp_user_pass.txt
+
+
+
+
+
+
+
+
+# services:
+#   mariadb:
+#     container_name: mariadb
+#     image: mariadb
+#     healthcheck:
+#       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+#       interval: 10s
+#       timeout: 5s
+#       retries: 5
+#     volumes:
+#       - mariadb:/var/lib/mysql
+#     build:
+#       context: requirements/mariadb
+#       dockerfile: Dockerfile
+#     environment:
+#       - MYSQL_DATABASE=wordpress
+#       - MYSQL_USER=hsirenko
+#       - MYSQL_PASSWORD=qwerty
+#       - MYSQL_ROOT_PASSWORD=qwerty
+#     env_file:
+#       - .env
+#     restart: on-failure
+#     networks:
+#       - inception
+  
+#   nginx:
+#     container_name: nginx
+#     image: nginx
+#     depends_on:
+#       wordpress:
+#         condition: service_healthy
+#     volumes:
+#       - wordpress:/var/www/wordpress
+#     build:
+#       context: requirements/nginx
+#       dockerfile: Dockerfile
+#     ports:
+#       - "443:443"
+#     env_file:
+#       - .env
+#     restart: on-failure
+#     networks:
+#       - inception
+  
+#   wordpress:
+#     container_name: wordpress
+#     image: wordpress
+#     volumes:
+#       - wordpress:/var/www/wordpress
+#     build:
+#       context: requirements/wordpress
+#       dockerfile: Dockerfile
+#     environment:
+#       - WORDPRESS_DB_HOST=mariadb
+#       - WORDPRESS_DB_USER=hsirenko
+#       - WORDPRESS_DB_PASSWORD=qwerty
+#       - WORDPRESS_DB_NAME=wordpress
+#     depends_on:
+#       mariadb:
+#         condition: service_healthy
+#     healthcheck:
+#       test: ["CMD", "curl", "-f", "http://localhost:9000/"]
+#       interval: 10s
+#       timeout: 5s
+#       retries: 5
+#     env_file:
+#       - .env
+#     restart: on-failure
+#     networks:
+#       - inception
+
+# networks:
+#   inception:
+#     driver: bridge
+#     name: inception
+
+
+
+
+
+
+
+# __________________________
+
+
+
+
+
+
+
+
+
+# x-common: &default-config
+#   env_file:
+#     - .env
+#   restart: on-failure
+#   networks:
+#     - inception
+
+# volumes:
+#   wordpress:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: '/home/${USER}/data/wordpress'
+
+#   mariadb:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: '/home/${USER}/data/mariadb'
+
+# secrets:
+#   mariadb_user:
+#     file: ../secrets/mariadb_user.txt
+#   mariadb_root_pass:
+#     file: ../secrets/mariadb_root_pass.txt
+#   mariadb_pass:
+#     file: ../secrets/mariadb_pass.txt
+#   wp_admin:
+#     file: ../secrets/wp_admin.txt
+#   wp_admin_pass:
+#     file: ../secrets/wp_admin_pass.txt
+#   wp_user:
+#     file: ../secrets/wp_user.txt
+#   wp_user_pass:
+#     file: ../secrets/wp_user_pass.txt
+
+# services:
+#   mariadb:
+#     <<: *default-config
+#     container_name: mariadb
+#     image: mariadb
+#     healthcheck:
+#       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+#       interval: 10s
+#       timeout: 5s
+#       retries: 5
+#     volumes:
+#       - mariadb:/var/lib/mysql
+#       - ./logs/mariadb:/var/log/mysql # Mount a local directory for logs
+#     environment:
+#       - MYSQL_LOG_CONSOLE=true # Log to console instead of a file
+#     build:
+#       context: requirements/mariadb
+#       dockerfile: Dockerfile
+#     secrets:
+#       - mariadb_user
+#       - mariadb_root_pass
+#       - mariadb_pass
+#     environment:
+#       - MYSQL_DATABASE=wordpress
+#       - MYSQL_USER=hsirenko
+#       - MYSQL_PASSWORD=qwerty
+#       - MYSQL_ROOT_PASSWORD=qwerty
+  
+#   nginx:
+#     <<: *default-config
+#     container_name: nginx
+#     image: nginx
+#     depends_on:
+#       - wordpress
+#     volumes:
+#       - wordpress:/var/www/wordpress
+#     build:
+#       context: requirements/nginx
+#       dockerfile: Dockerfile
+#     ports:
+#       - "443:443"
+  
+#   wordpress:
+#     <<: *default-config
+#     container_name: wordpress
+#     image: wordpress
+#     volumes:
+#     - wordpress:/var/www/wordpress
+#     build:
+#       context: requirements/wordpress
+#       dockerfile: Dockerfile
+#     secrets:
+#       - mariadb_user
+#       - mariadb_pass
+#       - wp_admin
+#       - wp_admin_pass
+#       - wp_user
+#       - wp_user_pass
+#     depends_on:
+#       - mariadb
+
+# networks:
+#   inception:
+#     driver: bridge
+#     name: inception
