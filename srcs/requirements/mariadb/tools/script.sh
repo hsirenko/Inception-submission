@@ -17,11 +17,17 @@ until mysqladmin ping -h localhost --silent; do
     sleep 2
 done
 
+# Secure the installation
+mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';"
+mysql -e "DELETE FROM mysql.user WHERE User='';"
+mysql -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost');"
+mysql -e "FLUSH PRIVILEGES;"
+
 # Create database and user
 mysql -e "CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE};"
 mysql -e "CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';"
 mysql -e "GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'%';"
 mysql -e "FLUSH PRIVILEGES;"
 
-# Keep the container running
-tail -f /dev/null
+# wait for the mysqld_safe process
+wait %1

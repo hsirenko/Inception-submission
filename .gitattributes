@@ -1,6 +1,21 @@
 # Auto detect text files and perform LF normalization
 * text=auto
 
+# Environment variables
+.env
+srcs/.env
+
+# SSL/TLS certificates and keys
+*.crt
+*.key
+secrets/
+srcs/requirements/nginx/tools/*.crt
+srcs/requirements/nginx/tools/*.key
+
+# Data directories
+data/
+**/data/
+
 
 # docker stop $(docker ps -qa); docker rm $(docker ps -qa);
 # docker rmi -f $(docker images -qa); docker volume rm $(docker volume ls -q);

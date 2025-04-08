@@ -5,10 +5,6 @@ ENV MYSQL_DATABASE=${MYSQL_DATABASE} \
     MYSQL_USER=${MARIADB_USER} \
     MYSQL_PASSWORD=${MARIADB_PASSWORD} \
     MYSQL_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
-# ENV MYSQL_DATABASE=wordpress \
-#     MYSQL_USER=hsirenko \
-#     MYSQL_PASSWORD=qwerty \
-#     MYSQL_ROOT_PASSWORD=qwerty
 
 RUN apt-get update && apt-get install -y \
     mariadb-server \

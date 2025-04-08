@@ -6,6 +6,8 @@ pid-file = /var/run/mysqld/mysqld.pid
 socket = /var/run/mysqld/mysqld.sock
 datadir = /var/lib/mysql
 log_error = /var/log/mysql/error.log
+skip-networking = 0
+skip-grant-tables = 0
 
 [mysqld_safe]
 socket = /var/run/mysqld/mysqld.sock
