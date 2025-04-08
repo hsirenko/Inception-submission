@@ -34,9 +34,15 @@ if [ ! -f /var/www/wordpress/wp-config.php ]; then
 fi
 
 # Set proper permissions before starting PHP-FPM
-chown -R www-data:www-data /var/www/wordpress
-find /var/www/wordpress -type d -exec chmod 755 {} \;
+find /var/www/wordpress -type d -exec chmod 777 {} \;
 find /var/www/wordpress -type f -exec chmod 644 {} \;
+
+# Ensure wp-content and its subdirectories have proper permissions
+chmod 777 /var/www/wordpress/wp-content
+chmod -R 777 /var/www/wordpress/wp-content/themes
+chmod -R 777 /var/www/wordpress/wp-content/plugins
+chmod -R 777 /var/www/wordpress/wp-content/upgrade
+chown -R www-data:www-data /var/www/wordpress
 
 # Start PHP-FPM
 mkdir -p /run/php

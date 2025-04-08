@@ -2,3 +2,24 @@
 * text=auto
 
 
+# docker stop $(docker ps -qa); docker rm $(docker ps -qa);
+# docker rmi -f $(docker images -qa); docker volume rm $(docker volume ls -q);
+# docker network rm $(docker network ls -q) 2>/dev/null
+
+# Stop any running containers (if they exist)
+# docker ps -q | xargs -r docker stop
+
+# # Remove all containers (if they exist)
+# docker ps -aq | xargs -r docker rm
+
+# # Remove all images (if they exist)
+# docker images -q | xargs -r docker rmi -f
+
+# # Remove all volumes (if they exist)
+# docker volume ls -q | xargs -r docker volume rm
+
+# # Remove the inception network (if it exists)
+# docker network ls | grep inception | awk '{print $1}' | xargs -r docker network rm
+
+# # Clean up the system
+# docker system prune -af

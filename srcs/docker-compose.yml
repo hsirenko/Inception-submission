@@ -3,10 +3,11 @@ services:
     container_name: mariadb
     image: mariadb
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MARIADB_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 30s
     volumes:
       - mariadb:/var/lib/mysql
       - ./logs/mariadb:/var/log/mysql
@@ -14,10 +15,10 @@ services:
       context: requirements/mariadb
       dockerfile: Dockerfile
     environment:
-      - MYSQL_DATABASE=wordpress
-      - MYSQL_USER=hsirenko
-      - MYSQL_PASSWORD=qwerty
-      - MYSQL_ROOT_PASSWORD=qwerty
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MARIADB_USER}
+      MYSQL_PASSWORD: ${MARIADB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
     env_file:
       - .env
     restart: on-failure

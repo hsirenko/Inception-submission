@@ -14,7 +14,7 @@ $(NAME): create-volumes
 create-volumes:
 	mkdir -p $(WP_VOLUME) $(MARIADB_VOLUME)
 
-up: create-volumes
+up: setup create-volumes
 	$(DOCKER_COMPOSE) up -d --build
 
 down:
@@ -43,20 +43,26 @@ clean:
 
 fclean: down
 	@echo "Cleaning up..."
+	@echo "Removing containers and images..."
+	$(DOCKER_COMPOSE) down --rmi all
+	@docker system prune -f
+	@echo "Cleanup complete!"
+
+purge: down
+    @echo "WARNING: This will delete all data! (5 seconds to cancel with Ctrl+C)"
+	@sleep 5
+	@echo "Cleaning up everything..."
 	@if [ -d "$(HOME)/data/wordpress" ]; then \
-		echo "Fixing WordPress permissions..."; \
 		sudo chown -R $(USER):$(USER) $(HOME)/data/wordpress; \
-		rm -rf $(HOME)/data/wordpress/*; \
+        rm -rf $(HOME)/data/wordpress/*; \
 	fi
 	@if [ -d "$(HOME)/data/mariadb" ]; then \
-		echo "Fixing MariaDB permissions..."; \
-		sudo chown -R $(USER):$(USER) $(HOME)/data/mariadb; \
-		rm -rf $(HOME)/data/mariadb/*; \
-	fi
-	@echo "Removing containers and images..."
+        sudo chown -R $(USER):$(USER) $(HOME)/data/mariadb; \
+        rm -rf $(HOME)/data/mariadb/*; \
+    fi
 	$(DOCKER_COMPOSE) down --volumes --remove-orphans
 	@docker system prune -af
-	@echo "Cleanup complete!"
+	@echo "Complete cleanup finished!"
 
 re: fclean $(NAME)
 
@@ -64,6 +70,8 @@ setup:
 	@echo "Setting up directories..."
 	@mkdir -p $(HOME)/data/wordpress
 	@mkdir -p $(HOME)/data/mariadb
+	@sudo chown -R $(USER):$(USER) $(HOME)/data/wordpress
+	@sudo chown -R $(USER):$(USER) $(HOME)/data/mariadb
 	@chmod 777 $(HOME)/data/wordpress
 	@chmod 777 $(HOME)/data/mariadb
 	@echo "Directories created and permissions set"

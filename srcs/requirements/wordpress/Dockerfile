@@ -30,11 +30,14 @@ RUN apt-get update -y && apt-get upgrade -y && \
     mariadb-client \
     curl \
     && rm -rf /var/lib/apt/lists/*
-
 # Create directories and set permissions in correct order
 RUN mkdir -p /var/www/wordpress /run/php && \
+    mkdir -p /var/www/wordpress/wp-content/themes && \
+    mkdir -p /var/www/wordpress/wp-content/plugins && \
+    mkdir -p /var/www/wordpress/wp-content/upgrade && \
     chown -R www-data:www-data /var/www/wordpress /run/php && \
-    chmod -R 755 /var/www/wordpress
+    chmod -R 777 /var/www/wordpress && \
+    chmod -R 777 /var/www/wordpress/wp-content
 
 # Install WP-CLI
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
