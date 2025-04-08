@@ -1,19 +1,19 @@
 [mysqld]
-	datadir = /var/lib/mysql
-	socket  = /run/mysqld/mysqld.sock
-	bind_address = 0.0.0.0
-	port = 3306
-	user = mysql
+bind-address = 0.0.0.0
+port = 3306
+user = mysql
+pid-file = /var/run/mysqld/mysqld.pid
+socket = /var/run/mysqld/mysqld.sock
+datadir = /var/lib/mysql
+skip-external-locking
+key_buffer_size = 16M
+max_allowed_packet = 16M
+thread_stack = 192K
+thread_cache_size = 8
+myisam-recover-options = BACKUP
+query_cache_limit = 1M
+query_cache_size = 16M
 
-	# Logging
-	log_error = /dev/stderr
-	#log_error = /var/log/mysql/error.log
-
-	# Performance tuning
-	innodb_buffer_pool_size = 128M
-	innodb_log_file_size = 32M
-	innodb_log_buffer_size = 8M
-	query_cache_size = 64M
-
-	# Security
-	max_connections = 150
+[mysqld_safe]
+socket = /var/run/mysqld/mysqld.sock
+nice = 0

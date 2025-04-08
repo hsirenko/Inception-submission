@@ -6,7 +6,7 @@ DOCKER_COMPOSE_FILE := ./srcs/docker-compose.yml
 
 DOCKER_COMPOSE := docker compose -f $(DOCKER_COMPOSE_FILE)
 
-all: $(NAME)
+all: setup $(NAME)
 
 $(NAME): create-volumes
 	$(DOCKER_COMPOSE) up --build

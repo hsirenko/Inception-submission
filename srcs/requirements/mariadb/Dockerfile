@@ -11,16 +11,11 @@ RUN apt-get update && apt-get install -y \
     mariadb-client \
     && rm -rf /var/lib/apt/lists/*
 
-# Create the data directory and set permissions
-RUN mkdir -p /var/log/mysql && \
-    chown -R mysql:mysql /var/log/mysql
+# Create necessary directories and set permissions
+RUN mkdir -p /var/lib/mysql /var/run/mysqld /var/log/mysql && \
+    chown -R mysql:mysql /var/lib/mysql /var/run/mysqld /var/log/mysql && \
+    chmod 777 /var/run/mysqld
 
-# RUN mkdir -p ${USER_HOME}/data/mariadb && \
-#     chown -R 999:999 ${USER_HOME}/data/mariadb
-
-# # Create the logs directory for MariaDB
-# RUN mkdir -p /logs/mariadb && \
-#     chown -R mysql:mysql /logs/mariadb
 
 COPY conf/50-server.cnf /etc/mysql/mariadb.conf.d/50-server.cnf
 COPY tools/script.sh /usr/local/bin/
